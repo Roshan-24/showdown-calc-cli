@@ -1,9 +1,10 @@
-import { StatsTable, MOVES, ITEMS, SPECIES, GenerationNum } from "@smogon/calc"
+import { StatsTable, MOVES, ITEMS, SPECIES, ABILITIES, GenerationNum } from "@smogon/calc"
 
 export interface pokemonInfo {
     name: string,
     item: string | undefined,
     nature: string,
+    ability: string | undefined,
     evs: Partial<StatsTable<number>>,
     boosts: Partial<StatsTable<number>>,
     move?: string
@@ -13,6 +14,7 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
     const moves = MOVES[gen];
     const items = ITEMS[gen];
     const species = SPECIES[gen];
+    const abilities = ABILITIES[gen];
 
     const args = str.split(' ');
 
@@ -22,7 +24,6 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
     } else {
         move = args[args.length - 2] + ' ' + args[args.length - 1];
     }
-    console.log(move);
     const category = moves[move].category;
 
     let evIndex = 0;
@@ -50,13 +51,23 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
     spaEv = args[evIndex + 1] === 'SpA' ? Number(args[evIndex]) : 0;
 
     let item: string | undefined = undefined
-    let speciesIndex = evIndex + 2;
+    let abilityIndex = evIndex + 2;
     if (items.includes(args[evIndex + 2])) {
         item = args[evIndex + 2];
-        speciesIndex = evIndex + 3;
+        abilityIndex = evIndex + 3;
     } else if (items.includes(args[evIndex + 2] + ' ' + args[evIndex + 3])) {
         item = args[evIndex + 2] + ' ' + args[evIndex + 3];
-        speciesIndex = evIndex + 4;
+        abilityIndex = evIndex + 4;
+    }
+
+    let ability: string | undefined = undefined;
+    let speciesIndex = abilityIndex;
+    if (abilities.includes(args[abilityIndex])) {
+        ability = args[abilityIndex];
+        speciesIndex = abilityIndex + 1;
+    } else if (abilities.includes(args[abilityIndex] + ' ' + args[abilityIndex + 1])) {
+        ability = args[abilityIndex] + ' ' + args[abilityIndex + 1];
+        speciesIndex = abilityIndex + 2;
     }
 
     let speciesName: string;
@@ -69,6 +80,7 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
     return [{
         name: speciesName!,
         item,
+        ability,
         nature,
         evs: {
             atk: atkEv,
@@ -85,6 +97,7 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
 export const parseDefenderString = (str: string, moveCategory: string, gen: GenerationNum): pokemonInfo => {
     const items = ITEMS[gen];
     const species = SPECIES[gen];
+    const abilities = ABILITIES[gen];
 
     const args = str.split(' ');
 
@@ -118,13 +131,23 @@ export const parseDefenderString = (str: string, moveCategory: string, gen: Gene
     spdEv = args[evIndex + 4] === 'SpD' ? Number(args[evIndex]) : 0;
 
     let item: string | undefined = undefined
-    let speciesIndex = evIndex + 5;
+    let abilityIndex = evIndex + 5;
     if (items.includes(args[evIndex + 5])) {
         item = args[evIndex + 5];
-        speciesIndex = evIndex + 6;
+        abilityIndex = evIndex + 6;
     } else if (items.includes(args[evIndex + 2] + ' ' + args[evIndex + 3])) {
         item = args[evIndex + 2] + ' ' + args[evIndex + 3];
-        speciesIndex = evIndex + 7;
+        abilityIndex = evIndex + 7;
+    }
+
+    let ability: string | undefined = undefined;
+    let speciesIndex = abilityIndex;
+    if (abilities.includes(args[abilityIndex])) {
+        ability = args[abilityIndex];
+        speciesIndex = abilityIndex + 1;
+    } else if (abilities.includes(args[abilityIndex] + ' ' + args[abilityIndex + 1])) {
+        ability = args[abilityIndex] + ' ' + args[abilityIndex + 1];
+        speciesIndex = abilityIndex + 2;
     }
 
     let speciesName: string;
@@ -137,6 +160,7 @@ export const parseDefenderString = (str: string, moveCategory: string, gen: Gene
     return {
         name: speciesName!,
         item,
+        ability,
         nature,
         evs: {
             hp: hpEv,
