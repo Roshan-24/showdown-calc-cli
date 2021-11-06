@@ -1,14 +1,5 @@
-import { StatsTable, MOVES, ITEMS, SPECIES, ABILITIES, GenerationNum } from "@smogon/calc"
-
-export interface pokemonInfo {
-    name: string,
-    item: string | undefined,
-    nature: string,
-    ability: string | undefined,
-    evs: Partial<StatsTable<number>>,
-    boosts: Partial<StatsTable<number>>,
-    move?: string
-}
+import { MOVES, ITEMS, SPECIES, ABILITIES, GenerationNum } from "@smogon/calc"
+import { pokemonInfo } from "../types";
 
 export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonInfo, string] => {
     const moves = MOVES[gen];

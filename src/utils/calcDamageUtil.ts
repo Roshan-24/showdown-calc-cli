@@ -1,7 +1,7 @@
-import { calculate, Pokemon, Move, GenerationNum } from "@smogon/calc";
-import { pokemonInfo } from "./rawStringUtils";
+import { calculate, Pokemon, Move, GenerationNum, Field } from "@smogon/calc";
+import { IBattleCondition, pokemonInfo } from "../types";
 
-export const calcDamage = (attacker: pokemonInfo, defender: pokemonInfo, gen: GenerationNum) => {
+export const calcDamage = (attacker: pokemonInfo, defender: pokemonInfo, gen: GenerationNum, battleCondition?: IBattleCondition) => {
     return calculate(
         gen,
         new Pokemon(gen, attacker.name, {
@@ -18,6 +18,7 @@ export const calcDamage = (attacker: pokemonInfo, defender: pokemonInfo, gen: Ge
             evs: defender.evs,
             boosts: defender.boosts
         }),
-        new Move(gen, attacker.move!)
+        new Move(gen, attacker.move!),
+        new Field(battleCondition)
     );
 }

@@ -1,3 +1,4 @@
+import { Command } from "commander";
 import { interactiveCalc, calcFromRawString } from ".";
 
 interface damageCalcOpts {
@@ -6,7 +7,8 @@ interface damageCalcOpts {
     gen: string
 }
 
-export const damageCalc = ({ interactive, rawString, gen }: damageCalcOpts) => {
+export const damageCalc = ({ interactive, rawString, gen }: damageCalcOpts, program: Command) => {
     if (interactive) interactiveCalc();
-    else calcFromRawString(rawString, gen);
+    else if (rawString) calcFromRawString(rawString, gen);
+    else program.help();
 }
