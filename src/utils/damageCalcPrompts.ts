@@ -119,6 +119,7 @@ export const damageCalcPrompts: inquirer.QuestionCollection<any> = [
     {
         name: 'defEv',
         message: 'Defense EVs of the defender',
+        default: 0,
         validate: validateEv,
         when: isMovePhysical
     },

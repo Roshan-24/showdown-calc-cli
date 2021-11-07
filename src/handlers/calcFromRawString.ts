@@ -1,5 +1,4 @@
 import { GenerationNum } from '@smogon/calc';
-import { parseResult } from '../utils/parseResult';
 import { calcDamage } from '../utils/calcDamageUtil';
 import { parseAttackerString, parseDefenderString } from '../utils/rawStringUtils';
 
@@ -13,7 +12,7 @@ export const calcFromRawString = (rawString: string, genString: string) => {
 
         const result = calcDamage(attacker, defender, gen);
 
-        console.log(rawString + ': ' + parseResult(result.defender.stats.hp, result.damage));
+        console.log(result.desc());
     } catch (err) {
         console.log('Invalid input string');
     }

@@ -15,8 +15,6 @@ const filterItem = (input: string) => {
 export const interactiveCalc = async () => {
     const ans: IDamageCalcAnswers = await inquirer.prompt(damageCalcPrompts);
 
-    console.log(ans)
-
     const attacker: pokemonInfo = {
         name: ans.attackerSpecies,
         ability: filterAbility(ans.attackerAbility),
@@ -61,5 +59,5 @@ export const interactiveCalc = async () => {
 
     const result = calcDamage(attacker, defender, 8, battleCondition);
 
-    console.log(result.damage);
+    console.log(result.desc());
 }
