@@ -1,4 +1,4 @@
-export const capitalize = (str: string) => str.split(' ').map(s => s[0].toUpperCase() + s.substr(1)).join(' ');
+export const capitalize = (str: string) => str ? str.split(' ').map(s => s[0].toUpperCase() + s.substr(1)).join(' ') : str;
 
 export { calcDamage } from "./calcDamageUtil";
-export { damageCalcPrompts } from './damageCalcPrompts';
+export { getDamageCalcPrompts } from './damageCalcPrompts';

@@ -2,6 +2,7 @@ import { MOVES } from "@smogon/calc";
 import inquirer from "inquirer";
 import { capitalize } from ".";
 import { IDamageCalcAnswers } from "../types";
+import { validateSpecies, validateMove, validateEv, validateBoost, validateNature, validateItem, validateAbility } from "./damagePromptValdations";
 
 const gen = 8;
 
@@ -14,21 +15,6 @@ const otherConditions = [
 const isMovePhysical = (answers: Partial<IDamageCalcAnswers>) => MOVES[gen][capitalize(answers.move!)].category === 'Physical';
 
 const isMoveSpecial = (answers: Partial<IDamageCalcAnswers>) => MOVES[gen][capitalize(answers.move!)].category === 'Special';
-
-const validateMove = (input: string) => {
-    if (MOVES[gen][capitalize(input)].category === 'Status') return 'Enter a damaging move';
-    return true;
-}
-
-const validateEv = (input: string) => {
-    if (Number(input) >= 0 && Number(input) <= 255) return true;
-    return 'Enter a valid EV value';
-}
-
-const validateBoost = (input: string) => {
-    if (Number(input) >= -6 && Number(input) <= 6) return true;
-    return 'Enter a valid stat boost';
-}
 
 const filterWeather = (input: string) => input === 'No Weather' ? undefined : input;
 
@@ -50,30 +36,32 @@ const terrainChoices = [
     'Grassy'
 ]
 
-export const damageCalcPrompts: inquirer.QuestionCollection<any> = [
+export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<any> => [
     {
         name: 'attackerSpecies',
         message: 'Species of the attacker',
-        filter: capitalize
+        filter: capitalize,
+        validate: input => validateSpecies(input, gen)
     },
     {
         name: 'move',
         message: 'Move used by the attacker',
         filter: capitalize,
-        validate: validateMove
+        validate: input => validateMove(input, gen)
     },
     {
         name: 'atkEv',
         message: 'Attack EVs of the attacker',
         default: 0,
         validate: validateEv,
-        when: isMovePhysical
+        when: input => isMovePhysical(input) && gen >= 3
     },
     {
         name: 'spaEv',
         message: 'Special Attack EVs of the attacker',
         default: 0,
-        when: isMoveSpecial
+        validate: validateEv,
+        when: input => isMoveSpecial(input) && gen >= 3
     },
     {
         name: 'atkBoost',
@@ -94,34 +82,42 @@ export const damageCalcPrompts: inquirer.QuestionCollection<any> = [
         message: 'Nature of the attacker',
         default: 'Bashful',
         filter: capitalize,
+        validate: validateNature,
+        when: () => gen >= 3
     },
     {
         name: 'attackerItem',
         message: 'Attacker\'s item',
         default: 'Non-damage impacting item',
+        validate: input => validateItem(input, gen),
+        when: () => gen >= 2
     },
     {
         name: 'attackerAbility',
         message: 'Attacker\'s ability',
         default: 'Non-damage impacting ability',
+        validate: input => validateAbility(input, gen),
+        when: () => gen >= 3
     },
     {
         name: 'defenderSpecies',
         message: 'Species of the defender',
         filter: capitalize,
+        validate: input => validateSpecies(input, gen)
     },
     {
         name: 'hpEv',
         message: 'HP EVs of the defender',
         default: 0,
-        validate: validateEv
+        validate: validateEv,
+        when: () => gen >= 3
     },
     {
         name: 'defEv',
         message: 'Defense EVs of the defender',
         default: 0,
         validate: validateEv,
-        when: isMovePhysical
+        when: input => isMovePhysical(input) && gen >= 3
     },
     {
         name: 'spdEv',
@@ -149,16 +145,22 @@ export const damageCalcPrompts: inquirer.QuestionCollection<any> = [
         message: 'Nature of the defender',
         default: 'Bashful',
         filter: capitalize,
+        validate: validateNature,
+        when: () => gen >= 3
     },
     {
         name: 'defenderItem',
         message: 'Defender\'s item',
         default: 'Non-damage impacting item',
+        validate: input => validateItem(input, gen),
+        when: () => gen >= 2
     },
     {
         name: 'defenderAbility',
         message: 'Defender\'s ability',
         default: 'Non-damage impacting ability',
+        validate: input => validateAbility(input, gen),
+        when: () => gen >= 3
     },
     {
         name: 'weather',
@@ -166,6 +168,7 @@ export const damageCalcPrompts: inquirer.QuestionCollection<any> = [
         type: 'list',
         choices: weatherChoices,
         filter: filterWeather,
+        when: () => gen >= 2
     },
     {
         name: 'terrain',
@@ -173,9 +176,11 @@ export const damageCalcPrompts: inquirer.QuestionCollection<any> = [
         type: 'list',
         choices: terrainChoices,
         filter: filterTerrain,
+        when: gen >= 6
     },
     {
         name: 'otherBattleConditions',
+        message: 'Other Battle Conditions',
         type: 'checkbox',
         choices: otherConditions
     }

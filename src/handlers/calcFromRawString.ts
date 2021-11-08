@@ -1,12 +1,10 @@
-import { GenerationNum } from '@smogon/calc';
-import { calcDamage } from '../utils/calcDamageUtil';
+import { calcDamage, capitalize } from '../utils';
 import { parseAttackerString, parseDefenderString } from '../utils/rawStringUtils';
 
-export const calcFromRawString = (rawString: string, genString: string) => {
+export const calcFromRawString = (rawString: string, gen: number) => {
     try {
-        const [attackerString, defenderString] = rawString.split('vs.').map(str => str.trim());
+        const [attackerString, defenderString] = rawString.split('vs.').map(str => capitalize(str.trim()));
 
-        const gen = Number(genString) as GenerationNum
         const [attacker, moveCategory] = parseAttackerString(attackerString, gen);
         const defender = parseDefenderString(defenderString, moveCategory, gen);
 

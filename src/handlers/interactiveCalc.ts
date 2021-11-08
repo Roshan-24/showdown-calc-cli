@@ -1,9 +1,9 @@
 import inquirer from "inquirer";
-import { calcDamage, capitalize, damageCalcPrompts } from "../utils";
+import { calcDamage, capitalize, getDamageCalcPrompts } from "../utils";
 import { IBattleCondition, IDamageCalcAnswers, pokemonInfo } from "../types";
 
 const filterAbility = (input: string) => {
-    if (input === 'Non-damage impacting ability') return undefined;
+    if (input === 'Non-damage impacting ability') return 'Run Away';
     return capitalize(input);
 }
 
@@ -12,8 +12,8 @@ const filterItem = (input: string) => {
     return capitalize(input);
 }
 
-export const interactiveCalc = async () => {
-    const ans: IDamageCalcAnswers = await inquirer.prompt(damageCalcPrompts);
+export const interactiveCalc = async (gen: number) => {
+    const ans: IDamageCalcAnswers = await inquirer.prompt(getDamageCalcPrompts(gen));
 
     const attacker: pokemonInfo = {
         name: ans.attackerSpecies,
@@ -21,7 +21,8 @@ export const interactiveCalc = async () => {
         item: filterItem(ans.attackerItem),
         evs: {
             atk: ans.atkEv ?? 0,
-            spa: ans.spaEv ?? 0
+            spa: ans.spaEv ?? 0,
+            spd: ans.spaEv
         },
         boosts: {
             atk: ans.atkBoost ?? 0,
@@ -38,6 +39,7 @@ export const interactiveCalc = async () => {
         evs: {
             hp: ans.hpEv,
             def: ans.defEv ?? 0,
+            spa: ans.spaEv,
             spd: ans.spdEv ?? 0
         },
         boosts: {
@@ -57,7 +59,6 @@ export const interactiveCalc = async () => {
         }
     }
 
-    const result = calcDamage(attacker, defender, 8, battleCondition);
-
+    const result = calcDamage(attacker, defender, gen, battleCondition);
     console.log(result.desc());
 }

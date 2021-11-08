@@ -1,7 +1,7 @@
-import { MOVES, ITEMS, SPECIES, ABILITIES, GenerationNum } from "@smogon/calc"
+import { MOVES, ITEMS, SPECIES, ABILITIES } from "@smogon/calc"
 import { pokemonInfo } from "../types";
 
-export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonInfo, string] => {
+export const parseAttackerString = (str: string, gen: number): [pokemonInfo, string] => {
     const moves = MOVES[gen];
     const items = ITEMS[gen];
     const species = SPECIES[gen];
@@ -39,7 +39,7 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
         args[evIndex] = args[evIndex].slice(0, -1);
     }
     atkEv = args[evIndex + 1] === 'Atk' ? Number(args[evIndex]) : 0;
-    spaEv = args[evIndex + 1] === 'SpA' ? Number(args[evIndex]) : 0;
+    spaEv = args[evIndex + 1].toLowerCase() === 'spa' ? Number(args[evIndex]) : 0;
 
     let item: string | undefined = undefined
     let abilityIndex = evIndex + 2;
@@ -85,7 +85,7 @@ export const parseAttackerString = (str: string, gen: GenerationNum): [pokemonIn
     }, moves[move].category!];
 }
 
-export const parseDefenderString = (str: string, moveCategory: string, gen: GenerationNum): pokemonInfo => {
+export const parseDefenderString = (str: string, moveCategory: string, gen: number): pokemonInfo => {
     const items = ITEMS[gen];
     const species = SPECIES[gen];
     const abilities = ABILITIES[gen];
@@ -107,19 +107,19 @@ export const parseDefenderString = (str: string, moveCategory: string, gen: Gene
         evIndex = 1;
     }
 
-    if (args[evIndex + 1] !== 'HP') throw 'Invalid String';
+    if (args[evIndex + 1].toLowerCase() !== 'hp') throw 'Invalid String';
     hpEv = Number(args[evIndex]);
 
     let nature = 'Bashful';
     if (args[evIndex + 3][args[evIndex + 3].length - 1] === '+') {
-        nature = args[evIndex + 4] === 'Def' ? 'Bold' : args[evIndex + 4] === 'SpD' ? 'Calm' : 'Bashful';
+        nature = args[evIndex + 4] === 'Def' ? 'Bold' : args[evIndex + 4].toLowerCase() === 'spd' ? 'Calm' : 'Bashful';
         args[evIndex + 3] = args[evIndex + 3].slice(0, -1);
     } else if (args[evIndex + 3][args[evIndex + 3].length - 1] === '-') {
-        nature = args[evIndex + 4] === 'Def' ? 'Hasty' : args[evIndex + 4] === 'SpD' ? 'Rash' : 'Bashful';
+        nature = args[evIndex + 4] === 'Def' ? 'Hasty' : args[evIndex + 4].toLowerCase() === 'spd' ? 'Rash' : 'Bashful';
         args[evIndex + 3] = args[evIndex + 3].slice(0, -1);
     }
     defEv = args[evIndex + 4] === 'Def' ? Number(args[evIndex]) : 0;
-    spdEv = args[evIndex + 4] === 'SpD' ? Number(args[evIndex]) : 0;
+    spdEv = args[evIndex + 4].toLowerCase() === 'spd' ? Number(args[evIndex]) : 0;
 
     let item: string | undefined = undefined
     let abilityIndex = evIndex + 5;
