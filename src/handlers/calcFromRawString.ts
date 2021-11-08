@@ -10,7 +10,7 @@ export const calcFromRawString = (rawString: string, gen: number) => {
 
         const result = calcDamage(attacker, defender, gen);
 
-        console.log(result.desc());
+        console.log('\n' + result.desc());
     } catch (err) {
         console.log('Invalid input string');
     }
