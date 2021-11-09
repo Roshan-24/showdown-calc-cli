@@ -82,6 +82,7 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         message: 'Attacker\'s item',
         default: 'Non-damage impacting item',
         validate: input => validateItem(input, gen),
+        filter: capitalize,
         when: () => gen >= 2
     },
     {
@@ -89,6 +90,7 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         message: 'Attacker\'s ability',
         default: 'Non-damage impacting ability',
         validate: input => validateAbility(input, gen),
+        filter: capitalize,
         when: () => gen >= 3
     },
     {
@@ -127,7 +129,7 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
     },
     {
         name: 'spdBoost',
-        message: 'Special Defense boost of the defender, if any',
+        message: () => (gen === 1 ? 'Special' : 'Special defense') + ' boost of the defender, if any',
         default: 0,
         validate: validateBoost,
         when:  ans => isMoveSpecial(ans.move, gen)
@@ -145,6 +147,7 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         message: 'Defender\'s item',
         default: 'Non-damage impacting item',
         validate: input => validateItem(input, gen),
+        filter: capitalize,
         when: () => gen >= 2
     },
     {
@@ -152,6 +155,7 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         message: 'Defender\'s ability',
         default: 'Non-damage impacting ability',
         validate: input => validateAbility(input, gen),
+        filter: capitalize,
         when: () => gen >= 3
     },
     {
@@ -174,6 +178,6 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         name: 'otherBattleConditions',
         message: 'Other Battle Conditions',
         type: 'checkbox',
-        choices: getOtherConditions
+        choices: () => getOtherConditions(gen)
     }
 ]

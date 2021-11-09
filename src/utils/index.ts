@@ -25,7 +25,7 @@ export const isMoveSpecial = (move: string, gen: number) => {
 }
 
 export const displayResult = (result: Result) => {
-    console.log('\n');
+    console.log('\n')
     if (result.damage === 0) result.damage = [0.1, 0.1, 0.1];
     if (result.kochance().text) return console.log(result.desc());
     if (result.damage instanceof Array && result.damage.join(',') === [0.1, 0.1, 0.1].join(','))

@@ -20,14 +20,16 @@ export const interactiveCalc = async (gen: number) => {
             name: ans.attackerSpecies,
             ability: filterAbility(ans.attackerAbility),
             item: filterItem(ans.attackerItem),
-            evs: {
-                atk: ans.atkEv ?? 0,
-                spa: ans.spaEv ?? 0,
-                spd: gen === 1 ? ans.spaEv ?? 0 : 0,
+            ...gen >= 3 && {
+                evs: {
+                    atk: ans.atkEv ?? 0,
+                    spa: ans.spaEv ?? 0
+                }
             },
             boosts: {
                 atk: ans.atkBoost ?? 0,
-                spa: ans.spaBoost ?? 0
+                spa: ans.spaBoost ?? 0,
+                ...gen === 1 && { spd: ans.spaBoost ?? 0 }
             },
             nature: ans.attackerNature,
             move: ans.move
@@ -37,14 +39,16 @@ export const interactiveCalc = async (gen: number) => {
             name: ans.defenderSpecies,
             ability: filterAbility(ans.defenderAbility),
             item: filterItem(ans.defenderItem),
-            evs: {
-                hp: ans.hpEv,
-                def: ans.defEv ?? 0,
-                spa: gen === 1 ? ans.spdEv ?? 0 : 0,
-                spd: ans.spdEv ?? 0
+            ...gen >= 3 && {
+                evs: {
+                    hp: ans.hpEv,
+                    def: ans.defEv ?? 0,
+                    spd: ans.spdEv ?? 0
+                }
             },
             boosts: {
                 def: ans.defBoost ?? 0,
+                ...gen === 1 && { spa: ans.spdBoost ?? 0 },
                 spd: ans.spdBoost ?? 0
             },
             nature: ans.defenderNature,

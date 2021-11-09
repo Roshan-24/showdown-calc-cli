@@ -33,7 +33,7 @@ export interface pokemonInfo {
     item: string | undefined,
     nature: string,
     ability: string | undefined,
-    evs: Partial<StatsTable<number>>,
+    evs?: Partial<StatsTable<number>>,
     boosts: Partial<StatsTable<number>>,
     move?: string
 }
