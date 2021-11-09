@@ -1,20 +1,12 @@
-import { MOVES } from "@smogon/calc";
 import inquirer from "inquirer";
-import { capitalize } from ".";
-import { IDamageCalcAnswers } from "../types";
+import { capitalize, isMovePhysical, isMoveSpecial } from ".";
 import { validateSpecies, validateMove, validateEv, validateBoost, validateNature, validateItem, validateAbility } from "./damagePromptValdations";
 
-const gen = 8;
-
-const otherConditions = [
-    'Gravity',
+const getOtherConditions = (gen: number) => [
+    ...gen >= 4 ? ['Gravity'] : [],
     'Reflect',
     'Light Screen'
 ]
-
-const isMovePhysical = (answers: Partial<IDamageCalcAnswers>) => MOVES[gen][capitalize(answers.move!)].category === 'Physical';
-
-const isMoveSpecial = (answers: Partial<IDamageCalcAnswers>) => MOVES[gen][capitalize(answers.move!)].category === 'Special';
 
 const filterWeather = (input: string) => input === 'No Weather' ? undefined : input;
 
@@ -54,28 +46,28 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         message: 'Attack EVs of the attacker',
         default: 0,
         validate: validateEv,
-        when: input => isMovePhysical(input) && gen >= 3
+        when: ans => isMovePhysical(ans.move, gen) && gen >= 3
     },
     {
         name: 'spaEv',
         message: 'Special Attack EVs of the attacker',
         default: 0,
         validate: validateEv,
-        when: input => isMoveSpecial(input) && gen >= 3
+        when: ans => isMoveSpecial(ans.move, gen) && gen >= 3
     },
     {
         name: 'atkBoost',
         message: 'Attack boost of the attacker, if any',
         default: 0,
         validate: validateBoost,
-        when: isMovePhysical
+        when: ans => isMovePhysical(ans.move, gen)
     },
     {
         name: 'spaBoost',
-        message: 'Special Attack boost of the attacker, if any',
+        message: () => (gen === 1 ? 'Special' : 'Special Attack') + ' boost of the attacker, if any',
         default: 0,
         validate: validateBoost,
-        when: isMoveSpecial
+        when: ans => isMoveSpecial(ans.move, gen)
     },
     {
         name: 'attackerNature',
@@ -117,28 +109,28 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         message: 'Defense EVs of the defender',
         default: 0,
         validate: validateEv,
-        when: input => isMovePhysical(input) && gen >= 3
+        when: ans => isMovePhysical(ans.move, gen) && gen >= 3
     },
     {
         name: 'spdEv',
         message: 'Special Defense EVs of the defender',
         default: 0,
         validate: validateEv,
-        when: isMoveSpecial
+        when:  ans => isMoveSpecial(ans.move, gen) && gen >= 3
     },
     {
         name: 'defBoost',
         message: 'Defense boost of the defender, if any',
         default: 0,
         validate: validateBoost,
-        when: isMovePhysical
+        when: ans => isMovePhysical(ans.move, gen)
     },
     {
         name: 'spdBoost',
         message: 'Special Defense boost of the defender, if any',
         default: 0,
         validate: validateBoost,
-        when: isMoveSpecial
+        when:  ans => isMoveSpecial(ans.move, gen)
     },
     {
         name: 'defenderNature',
@@ -182,6 +174,6 @@ export const getDamageCalcPrompts = (gen: number): inquirer.QuestionCollection<a
         name: 'otherBattleConditions',
         message: 'Other Battle Conditions',
         type: 'checkbox',
-        choices: otherConditions
+        choices: getOtherConditions
     }
 ]

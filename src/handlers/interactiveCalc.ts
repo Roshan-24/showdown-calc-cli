@@ -1,5 +1,5 @@
 import inquirer from "inquirer";
-import { calcDamage, capitalize, getDamageCalcPrompts } from "../utils";
+import { calcDamage, capitalize, displayResult, getDamageCalcPrompts } from "../utils";
 import { IBattleCondition, IDamageCalcAnswers, pokemonInfo } from "../types";
 
 const filterAbility = (input: string) => {
@@ -23,7 +23,7 @@ export const interactiveCalc = async (gen: number) => {
             evs: {
                 atk: ans.atkEv ?? 0,
                 spa: ans.spaEv ?? 0,
-                spd: ans.spaEv
+                spd: gen === 1 ? ans.spaEv ?? 0 : 0,
             },
             boosts: {
                 atk: ans.atkBoost ?? 0,
@@ -40,7 +40,7 @@ export const interactiveCalc = async (gen: number) => {
             evs: {
                 hp: ans.hpEv,
                 def: ans.defEv ?? 0,
-                spa: ans.spaEv,
+                spa: gen === 1 ? ans.spdEv ?? 0 : 0,
                 spd: ans.spdEv ?? 0
             },
             boosts: {
@@ -61,8 +61,8 @@ export const interactiveCalc = async (gen: number) => {
         }
 
         const result = calcDamage(attacker, defender, gen, battleCondition);
-        console.log('\n' + result.desc());
+        displayResult(result);
     } catch (err) {
-        console.log('Something went wrong, check your inputs')
+        console.log('\nSomething went wrong, check your inputs\n');
     }
 }

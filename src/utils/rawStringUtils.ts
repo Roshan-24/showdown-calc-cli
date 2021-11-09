@@ -1,4 +1,5 @@
 import { MOVES, ITEMS, SPECIES, ABILITIES } from "@smogon/calc"
+import { isMovePhysical } from ".";
 import { pokemonInfo } from "../types";
 
 export const parseAttackerString = (str: string, gen: number): [pokemonInfo, string] => {
@@ -15,16 +16,15 @@ export const parseAttackerString = (str: string, gen: number): [pokemonInfo, str
     } else {
         move = args[args.length - 2] + ' ' + args[args.length - 1];
     }
-    const category = moves[move].category;
 
     let evIndex = 0;
     let atkBoost = 0;
     let spaBoost = 0;
     if (args[0][0] === '+') {
-        category === 'Physical' ? atkBoost = Number(args[0][1]) : spaBoost = Number(args[0][1]);
+        isMovePhysical(move, gen) ? atkBoost = Number(args[0][1]) : spaBoost = Number(args[0][1]);
         evIndex = 1;
     } else if (args[0][0] === '-') {
-        category === 'Physical' ? atkBoost = -Number(args[0][1]) : spaBoost = -Number(args[0][1]);
+        isMovePhysical(move, gen) ? atkBoost = -Number(args[0][1]) : spaBoost = -Number(args[0][1]);
         evIndex = 1;
     }
 
@@ -32,10 +32,10 @@ export const parseAttackerString = (str: string, gen: number): [pokemonInfo, str
     let atkEv = 0;
     let spaEv = 0;
     if (args[evIndex][args[evIndex].length - 1] === '+') {
-        nature = category === 'Physical' ? 'Adamant' : 'Modest';
+        nature = args[evIndex + 1] === 'Atk' ? 'Brave' : args[evIndex + 1].toLowerCase() === 'spa' ? 'Quiet' : 'Bashful';
         args[evIndex] = args[evIndex].slice(0, -1);
     } else if (args[evIndex][args[evIndex].length - 1] === '-') {
-        nature = category === 'Physical' ? 'Modest' : 'Adamant';
+        nature = args[evIndex + 1].toLowerCase() === 'spa' ? 'Jolly' : args[evIndex + 1] === 'Atk' ? 'Timid' : 'Bashful';
         args[evIndex] = args[evIndex].slice(0, -1);
     }
     atkEv = args[evIndex + 1] === 'Atk' ? Number(args[evIndex]) : 0;
@@ -82,7 +82,7 @@ export const parseAttackerString = (str: string, gen: number): [pokemonInfo, str
             spa: spaBoost
         },
         move
-    }, moves[move].category!];
+    }, isMovePhysical(move, gen) ? 'Physical' : 'Special'];
 }
 
 export const parseDefenderString = (str: string, moveCategory: string, gen: number): pokemonInfo => {
